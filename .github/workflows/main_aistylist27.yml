@@ -31,7 +31,8 @@ jobs:
           #apt-get install ffmpeg libsm6 libxext6  -y
       - name: Install dependencies
         run: pip install -r requirements.txt
-        
+      - name: Download Models
+        run: ./early_jobs.sh
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
       - name: Upload artifact for deployment jobs
