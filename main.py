@@ -9,12 +9,11 @@ from io import StringIO, BytesIO
 import io
 import glob
 import torch
-import shutil
+import json
 import os
 import cv2 
 import webcolors
 from PIL import Image
-import matplotlib.colors
 from unet_segmentation.prediction.display import display_prediction
 from u2net_image import unet_image
 CUDA_VISIBLE_DEVICES=""
@@ -162,8 +161,8 @@ async def read_item(item: Item):
 				
 				payload={
 							'user_id': user_id,
-							'category_list': res,
-							'color': hex_to_color(item.color)
+							'category_list': json.dumps(res),
+							'color': json.dumps(hex_to_color(item.color))
 						}
 				
 				headers = {
