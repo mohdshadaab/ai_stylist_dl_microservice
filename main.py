@@ -123,7 +123,7 @@ def unet(image:Image.Image, user_id:str):
 	subimage.save('test_data/images/output/'+user_id+'/'+file_name+'.png')
 #%cd './test_data/images'|
 	os.system('rm -rf test_data/images/u2net_results')
-	shutil.rmtree('test_data/images/input/'+user_id)
+	os.system('rm -rf test_data/images/input/'+user_id)
 	#model = torch.load('/home/azureuser/fyp_file/unet_iter_1300000.pt',map_location='cpu')
 	label_list=display_prediction(model, 'test_data/images/output/'+user_id+'/'+file_name+'.png')
 	return label_list
