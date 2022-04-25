@@ -149,6 +149,7 @@ async def read_item(item: Item):
 		print(item.color)
 		if "user_id" in data:
 			if data["user_id"]==user_id:
+				os.system(f'mkdir test_data/images/input')
 				os.system(f'mkdir test_data/images/input/{item.user_id}')
 				os.system(f'mkdir test_data/images/output/{item.user_id}')
 				img=stringToImage(item.base64)
