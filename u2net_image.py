@@ -41,7 +41,7 @@ def save_output(image_name,pred,d_dir):
     image = io.imread(image_name)
     imo = im.resize((image.shape[1],image.shape[0]),resample=Image.BILINEAR)
 
-    pb_np = np.array(imo)
+    #pb_np = np.array(imo)
 
     aaa = img_name.split(".")
     bbb = aaa[0:-1]
@@ -64,7 +64,7 @@ def unet_image(user_id:str):
     model_dir = os.path.join(os.getcwd(),'saved_models',model_name,model_name+'.pth')
 
     img_name_list = glob.glob(image_dir + os.sep + '*')
-    print(img_name_list)
+    #print(img_name_list)
 
     # --------- 2. dataloader ---------
     #1. dataloader
@@ -86,9 +86,9 @@ def unet_image(user_id:str):
         print("...load U2NEP---4.7 MB")
         net = U2NETP(3,1)
     net.load_state_dict(torch.load(model_dir,map_location=device))
-    if torch.cuda.is_available():
-        net.cuda()
-    net.eval()
+    #if torch.cuda.is_available():
+        #net.cuda()
+    #net.eval()
 
     # --------- 4. inference for each image ---------
     for i_test, data_test in enumerate(test_salobj_dataloader):
@@ -98,10 +98,7 @@ def unet_image(user_id:str):
         inputs_test = data_test['image']
         inputs_test = inputs_test.type(torch.FloatTensor)
 
-        if torch.cuda.is_available():
-            inputs_test = Variable(inputs_test.cuda())
-        else:
-            inputs_test = Variable(inputs_test)
+        inputs_test = Variable(inputs_test)
 
         d1,d2,d3,d4,d5,d6,d7= net(inputs_test)
 

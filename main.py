@@ -120,8 +120,9 @@ def unet(image:Image.Image, user_id:str):
 	subimage.putdata(newdata)
     #subimage.save('/home/azureuser/fyp_file/unet_output/'+file_name+'.png',"PNG")
 	subimage.save('test_data/images/output/'+user_id+'/'+file_name+'.png')
+	del subimage, ogdata,newdata,original,subdata,u2netresult
 #%cd './test_data/images'|
-	os.system('rm -rf test_data/images/u2net_results')
+	os.system('rm -rf test_data/images/u2netp_results')
 	os.system('rm -rf test_data/images/input/'+user_id)
 	#model = torch.load('/home/azureuser/fyp_file/unet_iter_1300000.pt',map_location='cpu')
 	label_list=display_prediction(model, 'test_data/images/output/'+user_id+'/'+file_name+'.png')
@@ -146,38 +147,33 @@ async def read_item(item: Item):
 		response = requests.request("POST", url, headers=headers, data=payload)
 		data=response.json()
 		print(item.color)
-		if "user_id" in data:
-			if data["user_id"]==user_id:
-				os.system(f'mkdir test_data/images/input')
-				os.system(f'mkdir test_data/images/input/{item.user_id}')
-				os.system(f'mkdir test_data/images/output/{item.user_id}')
-				img=stringToImage(item.base64)
-				print(glob.glob(f"test_data/images/input/{item.user_id}/*"))
-				img.save(f'test_data/images/input/{item.user_id}/{item.user_id}.jpeg')
-				del img
-				img=Image.open(f'test_data/images/input/{item.user_id}/{item.user_id}.jpeg')
-				res= unet(img, item.user_id)
-				url = "http://aiwardrobe.southeastasia.cloudapp.azure.com:8000/account/upload_image"
+		if response.status_code == 200:
+			os.system(f'mkdir test_data/images/input')
+			os.system(f'mkdir test_data/images/input/{item.user_id}')
+			os.system(f'mkdir test_data/images/output/{item.user_id}')
+			img=stringToImage(item.base64)
+			print(glob.glob(f"test_data/images/input/{item.user_id}/*"))
+			img.save(f'test_data/images/input/{item.user_id}/{item.user_id}.jpeg')
+			del img
+			img=Image.open(f'test_data/images/input/{item.user_id}/{item.user_id}.jpeg')
+			res= unet(img, item.user_id)
+			url = "http://aiwardrobe.southeastasia.cloudapp.azure.com:8000/account/upload_image"
 				
-				payload={
-							'user_id': user_id,
-							'category_list': json.dumps(res),
-							'color': json.dumps(hex_to_color(item.color))
-						}
+			payload={
+						'user_id': user_id,
+						'category_list': json.dumps(res),
+						'color': json.dumps(hex_to_color(item.color))
+					}
 				
-				headers = {
-  					#'Content-Type': 'application/x-www-form-urlencoded'
-				}
-				files={'image': open('test_data/images/output/'+user_id+'/'+user_id+'.png','rb')}
-				response = requests.request("POST", url, data=payload, files=files)
-				print(payload)
+			headers = {
+  				#'Content-Type': 'application/x-www-form-urlencoded'
+			}
+			files={'image': open('test_data/images/output/'+user_id+'/'+user_id+'.png','rb')}
+			response = requests.request("POST", url, data=payload, files=files)
+			print(payload)
+			os.system(f'rm -rf test_data/images/output/{item.user_id}')
 				#print(response.text)
-			else:
-				raise HTTPException(status_code=500, detail="user_id not valid")
 		else:
-			raise HTTPException(status_code=404, detail="Bad Request, no user_id given.")
-
-
-	
+			raise HTTPException(status_code=response.status_code, detail="Something went wrong")
 	return payload
 
