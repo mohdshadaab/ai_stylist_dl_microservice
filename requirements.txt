@@ -3,7 +3,7 @@ fastapi
 matplotlib
 python-multipart
 numpy
-opencv-contrib-python
+opencv-python-headless
 Pillow
 pydantic
 requests

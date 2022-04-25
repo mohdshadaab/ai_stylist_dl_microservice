@@ -26,9 +26,9 @@ jobs:
         run: |
           python -m venv venv
           source venv/bin/activate
-      - name: Install packages for opencv
-        run: |
-          apt-get install ffmpeg libsm6 libxext6  -y
+      #- name: Install packages for opencv
+        #run: |
+          #apt-get install ffmpeg libsm6 libxext6  -y
       - name: Install dependencies
         run: pip install -r requirements.txt
         
