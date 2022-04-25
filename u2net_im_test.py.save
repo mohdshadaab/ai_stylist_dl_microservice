@@ -1,0 +1,65 @@
+import torch
+import time
+import shutil
+import os
+from cv2 import cv2 
+from PIL import Image
+import IPython
+from unet_segmentation.prediction.display import display_prediction
+
+CUDA_VISIBLE_DEVICES=""
+device = torch.device("cpu")
+ssh -i <private key path> azureuser@testfyp2.southeastasia.cloudapp.azure.com
+def unet_image(image_name):
+#for image
+	os.system('mkdir /home/azureuser/background_removal_DL/test_data/images/temp')
+	os.system('mkdir /home/azureuser/background_removal_DL/test_data/images/input')
+#os.system('mkdir u2net_results')
+	img_name=image_name
+	tmp_file='/home/azureuser/background_removal_DL/test_data/images/temp/'+img_name
+	dst='/home/azureuser/background_removal_DL/test_data/images/input/'
+	shutil.copy2(tmp_file, dst)
+#time.sleep(2)
+#os.system("cp tmp_file dst")
+
+	os.system('python u2net_image.py') 
+
+	file_name,file_extension=img_name.split(".")
+#u2netresult
+	u2netresult=cv2.imread('/home/azureuser/background_removal_DL/test_data/images/u2net_results/'+file_name+'.png')
+#orginalimage (CHANGE FILE EXTENSION HERE - BY DEFAULT: *.jpg)
+	original=cv2.imread('/home/azureuser/background_removal_DL/test_data/images/input/'+img_name)
+#subimage
+	subimage=cv2.subtract(u2netresult,original)
+#print(subimage)
+	cv2.imwrite('/home/azureuser/background_removal_DL/test_data/images/output/'+file_name+'.png',subimage)
+
+#subimage
+	subimage=Image.open('/home/azureuser/background_removal_DL/test_data/images/output/'+file_name+'.png')
+#originalimage
+	original=Image.open('/home/azureuser/background_removal_DL/test_data/images/input/'+img_name)
+
+
+	subimage=subimage.convert("RGB")
+	original=original.convert("RGB")
+
+	subdata=subimage.getdata()
+	ogdata=original.getdata()
+
+	newdata=[]
+	for i in range(subdata.size[0]*subdata.size[1]):
+    		if subdata[i][0]==0 and subdata[i][1]==0 and subdata[i][2]==0:
+        		newdata.append((255,255,255,0))
+    		else:
+        		newdata.append(ogdata[i])
+	subimage.putdata(newdata)
+	subimage.save('/home/azureuser/fyp_file/unet_output/'+file_name+'.png',"PNG")
+
+#%cd './test_data/images'|
+	os.system('rm -rf /home/azureuser/background_removal_DL/test_data/images/u2net_results')
+	shutil.rmtree('/home/azureuser/background_removal_DL/test_data/images/input')
+	model = torch.load('/home/azureuser/fyp_file/unet_iter_1300000.pt',map_location='cpu')
+	labels=display_prediction(model, '/home/azureuser/background_removal_DL/test_data/images/output/'+file_name+'.png')
+	return labels;
+
+print(unet_image("full_dress1.jpeg"))
