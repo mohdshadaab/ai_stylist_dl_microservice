@@ -1,4 +1,5 @@
 aiofiles
+gdown
 fastapi
 matplotlib
 python-multipart
