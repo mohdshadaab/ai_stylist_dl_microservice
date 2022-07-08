@@ -1,6 +1,7 @@
 aiofiles
 gdown
 fastapi
+starlette
 matplotlib
 python-multipart
 numpy
