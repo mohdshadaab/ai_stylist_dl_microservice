@@ -22,13 +22,7 @@ model = torch.load('unet_iter_1300000.pt',map_location='cpu')
 
 app = FastAPI()
 
-origins = [
-    "http://localhost.tiangolo.com",
-    "https://localhost.tiangolo.com",
-    "http://localhost",
-    "http://localhost:8080",
-    "http://localhost:3000"
-]
+origins = ["*"]
 
 #to handle requests between cross-origin resources
 app.add_middleware(
@@ -37,6 +31,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"]
 )
 
 
