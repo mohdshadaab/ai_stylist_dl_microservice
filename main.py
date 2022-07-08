@@ -1,7 +1,7 @@
 import requests
 from fastapi import FastAPI, HTTPException
 
-#from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 from pydantic import BaseModel
 import base64
@@ -19,34 +19,22 @@ from u2net_image import unet_image
 CUDA_VISIBLE_DEVICES=""
 device = torch.device("cpu")
 model = torch.load('unet_iter_1300000.pt',map_location='cpu')
-from starlette.middleware import Middleware
-from starlette.middleware.cors import CORSMiddleware
 
-origins = [
-    "*",
-]
 
-middleware = [
-    Middleware(CORSMiddleware, 
-	       allow_origins=origins,
-	      allow_headers=["*"],
-	      allow_methods=["*"])
-]
-
-app = FastAPI(middleware=middleware)
+app = FastAPI()
 
 
 #to handle requests between cross-origin resources
-"""
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
     expose_headers=["*"]
 )
-"""
+
 
 class Item(BaseModel):
 	user_id: str
